@@ -31,6 +31,15 @@ async function init() {
     stock INT NOT NULL DEFAULT 100
   );`);
 }
-init().catch(err => console.error('Product DB init error:', err));
+async function initWithRetry() {
+  try {
+    await init();
+    console.log('Product database initialized');
+  } catch (err) {
+    console.error('Product DB init error:', err.message);
+    setTimeout(initWithRetry, 3000);
+  }
+}
+initWithRetry();
 
 export default { query };

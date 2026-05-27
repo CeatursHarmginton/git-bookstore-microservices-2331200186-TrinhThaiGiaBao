@@ -31,8 +31,15 @@ async function init() {
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
   );`);
 }
-init().catch(err => {
-  console.error('Order DB init error:', err);
-});
+async function initWithRetry() {
+  try {
+    await init();
+    console.log('Order database initialized');
+  } catch (err) {
+    console.error('Order DB init error:', err.message);
+    setTimeout(initWithRetry, 3000);
+  }
+}
+initWithRetry();
 
 export default { query };
